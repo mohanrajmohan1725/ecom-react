@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.nav-link {
+  @apply text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400;
+}
+
+.badge {
+  @apply absolute -top-3 -right-4 bg-red-500 text-white text-xs w-5 h-5 flex 
+  items-center justify-center rounded-full;
+}
+
+.dropdown {
+  @apply absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 border dark:border-gray-700 
+  rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none 
+  group-hover:pointer-events-auto transition;
+}
+
+.dropdown-item {
+  @apply block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-200;
+}
+
+.mobile-menu {
+  @apply md:hidden bg-white dark:bg-gray-900 dark:text-gray-100 px-4 pb-3 
+  space-y-3 shadow-md border-t border-gray-200 dark:border-gray-700;
+}
+
+.mobile-item {
+  @apply block py-2 border-b text-gray-700 dark:text-gray-300;
+}
+
+.mobile-badge {
+  @apply absolute top-2 right-4 bg-red-500 text-white text-xs w-5 h-5 
+  flex items-center justify-center rounded-full;
+}
+
+.mobile-logout {
+  @apply block py-2 border-b text-left text-red-600 dark:text-red-400;
+}
