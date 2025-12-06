@@ -38,3 +38,11 @@
 .mobile-logout {
   @apply block py-2 border-b text-left text-red-600 dark:text-red-400;
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

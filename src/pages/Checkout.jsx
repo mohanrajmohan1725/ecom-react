@@ -7,6 +7,8 @@ function Checkout() {
   const { cart } = useCart();
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(false);
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -20,7 +22,7 @@ function Checkout() {
     0
   );
 
-  // ----------- CART EMPTY CHECK -----------
+  // 🛑 If cart empty -> redirect
   useEffect(() => {
     if (cart.length === 0) {
       toast.error("Your cart is empty!");
@@ -28,7 +30,7 @@ function Checkout() {
     }
   }, [cart, navigate]);
 
-  // ----------- AUTO-FILL ADDRESS FROM PROFILE -----------
+  // 🔄 Autofill From Profile
   useEffect(() => {
     try {
       const savedUser = JSON.parse(localStorage.getItem("user"));
@@ -42,7 +44,7 @@ function Checkout() {
         }));
       }
     } catch (err) {
-      console.error("User parse error:", err);
+      console.log("User parse error:", err);
     }
   }, []);
 
@@ -50,7 +52,7 @@ function Checkout() {
     setForm({ ...form, [key]: value });
   };
 
-  // ----------- SAVE ORDER FUNCTION -----------
+  // 📦 Save order
   const saveOrder = () => {
     const order = {
       orderId: Math.floor(Math.random() * 900000 + 100000),
@@ -62,51 +64,56 @@ function Checkout() {
       status: form.payment === "cod" ? "Pending - COD" : "Paid",
     };
 
-    let previousOrders = [];
+    let oldOrders = [];
     try {
       const raw = localStorage.getItem("orders_v1");
-      previousOrders = raw ? JSON.parse(raw) : [];
+      oldOrders = raw ? JSON.parse(raw) : [];
     } catch {}
 
-    localStorage.setItem("orders_v1", JSON.stringify([...previousOrders, order]));
+    localStorage.setItem("orders_v1", JSON.stringify([...oldOrders, order]));
     localStorage.setItem("last_order_v1", JSON.stringify(order));
     localStorage.removeItem("cart_v1");
   };
 
-  // ----------- COD ORDER -----------
-  const handleCOD = () => {
+  // 🧾 Validation
+  const validateForm = () => {
     if (!form.name || !form.email || !form.phone || !form.address) {
-      toast.error("Please fill all fields!");
-      return;
+      toast.error("Please fill all details");
+      return false;
     }
+    return true;
+  };
+
+  // 💵 COD Order
+  const handleCOD = () => {
+    if (!validateForm()) return;
 
     saveOrder();
-    toast.success("Order placed with Cash on Delivery!");
+    toast.success("Order placed successfully!");
     navigate("/order-success");
   };
 
-  // ----------- RAZORPAY PAYMENT -----------
-  const handleOnlinePayment = () => {
-    if (!form.name || !form.email || !form.phone || !form.address) {
-      toast.error("Please fill all fields!");
-      return;
-    }
+  // 💳 Razorpay Payment
+  const handleRazorpay = () => {
+    if (!validateForm()) return;
 
     if (!window.Razorpay) {
-      toast.error("Razorpay SDK not loaded.");
+      toast.error("Razorpay SDK failed to load!");
       return;
     }
 
+    setLoading(true);
+
     const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_xxxxxxxx",
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_123456",
       amount: Math.round(totalPrice * 100),
       currency: "INR",
       name: "Mohan-Shop",
       description: "Order Payment",
-      handler: function (response) {
-        console.log("Razorpay Success:", response);
+      handler: function () {
         saveOrder();
-        toast.success("Payment Successful!");
+        toast.success("Payment successful!");
+        setLoading(false);
         navigate("/order-success");
       },
       prefill: {
@@ -114,17 +121,16 @@ function Checkout() {
         email: form.email,
         contact: form.phone,
       },
-      theme: {
-        color: "#2563EB",
-      },
+      theme: { color: "#2563EB" },
     };
 
     const rzp = new window.Razorpay(options);
     rzp.open();
   };
 
+  // 💥 Main Action
   const handlePlaceOrder = () => {
-    form.payment === "cod" ? handleCOD() : handleOnlinePayment();
+    form.payment === "cod" ? handleCOD() : handleRazorpay();
   };
 
   return (
@@ -132,8 +138,8 @@ function Checkout() {
       <h1 className="text-3xl font-bold mb-6">Checkout</h1>
 
       <div className="grid md:grid-cols-2 gap-8">
-        
-        {/* ---------- BILLING DETAILS ---------- */}
+
+        {/* LEFT SIDE — USER DETAILS */}
         <div className="p-4 border rounded-lg dark:bg-gray-800 dark:border-gray-700 shadow">
           <h2 className="text-xl font-bold mb-4">Billing Details</h2>
 
@@ -170,10 +176,9 @@ function Checkout() {
               className="w-full border p-2 h-24 rounded dark:bg-gray-700 dark:border-gray-600"
             ></textarea>
 
-            {/* PAYMENT METHOD */}
+            {/* Payment Method */}
             <div>
               <label className="font-semibold">Payment Method</label>
-
               <select
                 value={form.payment}
                 onChange={(e) => onChange("payment", e.target.value)}
@@ -183,11 +188,10 @@ function Checkout() {
                 <option value="online">Online Payment (Razorpay)</option>
               </select>
             </div>
-
           </div>
         </div>
 
-        {/* ---------- ORDER SUMMARY ---------- */}
+        {/* RIGHT SIDE — ORDER SUMMARY */}
         <div className="p-4 border rounded-lg dark:bg-gray-800 dark:border-gray-700 shadow">
           <h2 className="text-xl font-bold mb-4">Order Summary</h2>
 
@@ -195,8 +199,8 @@ function Checkout() {
             {cart.map((item) => (
               <div key={item.id} className="flex justify-between text-sm">
                 <p className="w-2/3">
-                  {item.title}
-                  <span className="text-gray-500"> × {item.qty}</span>
+                  {item.title}{" "}
+                  <span className="text-gray-500">x {item.qty}</span>
                 </p>
                 <p>₹{(item.price * item.qty).toFixed(2)}</p>
               </div>
@@ -210,15 +214,17 @@ function Checkout() {
           </h2>
 
           <button
+            disabled={loading}
             onClick={handlePlaceOrder}
-            className="w-full mt-4 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
+            className="w-full mt-4 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 disabled:opacity-50"
           >
-            {form.payment === "cod"
+            {loading
+              ? "Processing..."
+              : form.payment === "cod"
               ? "Place Order (COD)"
               : "Pay Now with Razorpay"}
           </button>
         </div>
-
       </div>
     </div>
   );
