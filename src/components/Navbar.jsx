@@ -2,7 +2,15 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
-import { FaUserCircle, FaSignInAlt, FaSearch, FaHeart } from "react-icons/fa";
+
+import {
+  FaUserCircle,
+  FaSignInAlt,
+  FaSearch,
+  FaHeart,
+  FaStore,
+  FaShoppingCart
+} from "react-icons/fa";
 
 function Navbar() {
   const [open, setOpen] = useState(false);
@@ -30,9 +38,11 @@ function Navbar() {
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-900  sticky top-0 z-50">
+    <nav className="bg-white dark:bg-gray-900 shadow sticky top-0 z-50">
+
       {/* DESKTOP NAV */}
       <div className="hidden md:flex max-w-7xl mx-auto items-center justify-between px-4 py-3">
+
         {/* LOGO */}
         <Link
           to="/"
@@ -41,10 +51,11 @@ function Navbar() {
           Mohan-Shop
         </Link>
 
-        {/* CENTER SEARCH BAR */}
+        {/* SEARCH BAR */}
         <form
           onSubmit={handleSearch}
-          className="hidden md:flex items-center bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 ml-10 flex-1 max-w-xl"
+          className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 
+          dark:border-gray-600 rounded-md px-4 py-2 mx-10 flex-1 max-w-xl"
         >
           <input
             type="text"
@@ -53,28 +64,49 @@ function Navbar() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-transparent text-gray-700 dark:text-gray-200 text-sm outline-none"
           />
-          <button type="submit" className="ml-3">
+          <button type="submit">
             <FaSearch className="text-blue-600 text-lg" />
           </button>
         </form>
 
         {/* RIGHT ICONS */}
-        <div className="flex items-center space-x-6 text-xl">
+        <div className="flex items-center space-x-8">
+
+          {/* PRODUCTS */}
+          <Link to="/products" className="flex flex-col items-center w-14">
+            <FaStore className="text-blue-600 dark:text-blue-400 text-2xl" />
+            <span className="text-[11px] text-gray-700 dark:text-gray-300 mt-1">
+              Products
+            </span>
+          </Link>
+
           {/* WISHLIST */}
-          <Link to="/wishlist" className="relative">
-            <FaHeart className="text-red-500" />
+          <Link to="/wishlist" className="relative flex flex-col items-center w-14">
+            <FaHeart className="text-blue-600 dark:text-blue-400 text-2xl" />
+
+            <span className="text-[11px] mt-1 text-gray-700 dark:text-gray-300">
+              Wishlist
+            </span>
+
             {wishlistCount > 0 && (
-              <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs w-5 h-5 flex justify-center items-center rounded-full">
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px]
+              w-5 h-5 flex justify-center items-center rounded-full">
                 {wishlistCount}
               </span>
             )}
           </Link>
 
           {/* CART */}
-          <Link to="/cart" className="relative">
-            🛒
+          <Link to="/cart" className="relative flex flex-col items-center w-14">
+            <FaShoppingCart className="text-blue-600 dark:text-blue-400 text-2xl" />
+
+            <span className="text-[11px] mt-1 text-gray-700 dark:text-gray-300">
+              Cart
+            </span>
+
             {totalItems > 0 && (
-              <span className="absolute -top-2 -right-3 bg-green-600 text-white text-xs w-5 h-5 flex justify-center items-center rounded-full">
+              <span className="absolute -top-1 -right-1 bg-green-600 text-white text-[10px]
+              w-5 h-5 flex justify-center items-center rounded-full">
                 {totalItems}
               </span>
             )}
@@ -82,59 +114,44 @@ function Navbar() {
 
           {/* PROFILE */}
           {!isLoggedIn ? (
-            <Link to="/login">
-              <FaSignInAlt />
+            <Link to="/login" className="flex flex-col items-center w-14">
+              <FaSignInAlt className="text-blue-600 dark:text-blue-400 text-2xl" />
+              <span className="text-[11px] mt-1 text-gray-700 dark:text-gray-300">
+                Login
+              </span>
             </Link>
           ) : (
-            <div className="relative group">
-              <FaUserCircle className="cursor-pointer" />
+            <div className="relative group flex flex-col items-center w-14">
+              <FaUserCircle className="text-blue-600 dark:text-blue-400 text-2xl cursor-pointer" />
+              <span className="text-[11px] mt-1 text-gray-700 dark:text-gray-300">
+                Account
+              </span>
 
-              {/* DROPDOWN */}
               <div className="dropdown">
-                <Link to="/profile" className="dropdown-item">
-                  Profile
-                </Link>
-                <Link to="/orders" className="dropdown-item">
-                  Orders
-                </Link>
+                <Link to="/profile" className="dropdown-item">Profile</Link>
+                <Link to="/orders" className="dropdown-item">Orders</Link>
                 <button
-                  className="dropdown-item text-red-500"
                   onClick={handleLogout}
+                  className="dropdown-item text-red-500"
                 >
                   Logout
                 </button>
               </div>
             </div>
           )}
-
-          {/* HAMBURGER */}
-          {/* <button onClick={() => setOpen(!open)} className="text-2xl">
-            ☰
-          </button> */}
         </div>
       </div>
 
       {/* MOBILE NAV */}
       <div className="md:hidden px-4 py-3 flex items-center justify-between">
-        {/* LOGO */}
-        <Link
-          to="/"
-          className="text-xl font-bold text-blue-600 dark:text-blue-400"
-        >
+        <Link to="/" className="text-xl font-bold text-blue-600 dark:text-blue-400">
           Mohan-Shop
         </Link>
 
-        {/* RIGHT ICONS */}
         <div className="flex items-center space-x-4 text-xl">
-          <Link to="/wishlist" className="relative">
-            <FaHeart className="text-red-500" />
-          </Link>
-          <Link to="/cart" className="relative">
-            🛒
-          </Link>
-          <button onClick={() => setOpen(!open)} className="text-2xl">
-            ☰
-          </button>
+          <Link to="/wishlist"><FaHeart className="text-red-500" /></Link>
+          <Link to="/cart"><FaShoppingCart className="text-blue-600" /></Link>
+          <button onClick={() => setOpen(!open)}>☰</button>
         </div>
       </div>
 
@@ -151,29 +168,20 @@ function Navbar() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-transparent outline-none"
           />
-          <button>
-            <FaSearch />
-          </button>
+          <button><FaSearch /></button>
         </form>
       </div>
 
       {/* MOBILE MENU */}
       {open && (
         <div className="mobile-menu">
-          <Link to="/" className="mobile-item">
-            Home
-          </Link>
-          <Link to="/products" className="mobile-item">
-            Products
-          </Link>
-          <Link to="/wishlist" className="mobile-item">
-            Wishlist
-          </Link>
-          <Link to="/cart" className="mobile-item">
-            Cart
-          </Link>
+          <Link to="/" className="mobile-item">Home</Link>
+          <Link to="/products" className="mobile-item">Products</Link>
+          <Link to="/wishlist" className="mobile-item">Wishlist</Link>
+          <Link to="/cart" className="mobile-item">Cart</Link>
         </div>
       )}
+
     </nav>
   );
 }
