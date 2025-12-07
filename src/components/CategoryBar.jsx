@@ -25,16 +25,25 @@ const categories = [
 
 function CategoryBar() {
   return (
-    <div className="w-full bg-white dark:bg-gray-900  border-b dark:border-gray-700">
-      <div className="max-w-7xl mx-auto px-4 py-2">
+    <div className="w-full bg-white dark:bg-gray-900 border-b dark:border-gray-700">
+      <div className="max-w-7xl mx-auto px-4 py-3">
 
-        {/* Scrollable Row */}
-        <div className="flex items-center gap-8 overflow-x-auto no-scrollbar py-2">
+        {/* Mobile Scroll + Desktop Grid */}
+        <div className="
+          flex md:grid md:grid-cols-9 
+          items-center 
+          gap-6 md:gap-2 
+          overflow-x-auto md:overflow-visible 
+          no-scrollbar
+        ">
           {categories.map((cat) => (
             <Link
               key={cat.slug}
               to={`/products?category=${cat.slug}`}
-              className="flex flex-col items-center text-gray-700 dark:text-gray-200 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400"
+              className="flex flex-col items-center text-gray-700 dark:text-gray-200 
+                         text-xs sm:text-sm font-medium 
+                         hover:text-blue-600 dark:hover:text-blue-400
+                         min-w-[60px] md:min-w-0"
             >
               <div className="text-blue-600 dark:text-blue-400 mb-1">
                 {cat.icon}

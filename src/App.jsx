@@ -13,6 +13,8 @@ import Wishlist from "./pages/Wishlist";
 import Orders from "./pages/Orders";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
+import Offers from "./pages/Offers";
+
 
 import { useEffect } from "react";
 import { loadTheme } from "./utils/theme";
@@ -55,6 +57,8 @@ function App() {
 
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-success" element={<OrderSuccess />} />
+        <Route path="/offers" element={<Offers />} />
+
       </Routes>
     </Router>
   );
