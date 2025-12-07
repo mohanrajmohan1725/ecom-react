@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import BottomNav from "./components/BottomNav";
 import CategoryBar from "./components/CategoryBar";
 
 import Home from "./pages/Home";
@@ -15,51 +16,30 @@ import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import Offers from "./pages/Offers";
 
-
-import { useEffect } from "react";
-import { loadTheme } from "./utils/theme";
-import "./index.css";
-
 function App() {
-
-  // Load dark/light theme on startup
-  useEffect(() => {
-    loadTheme();
-  }, []);
-
-  // ❗ Hide category bar on pages where it is NOT needed
-  const hideCategoryBarPages = ["/login", "/signup", "/profile", "/checkout", "/order-success"];
-  const currentPath = window.location.pathname;
-  const showCategoryBar = !hideCategoryBarPages.includes(currentPath);
 
   return (
     <Router>
-      {/* Navbar */}
       <Navbar />
+      <CategoryBar />
 
-      {/* Category Bar (Flipkart style) */}
-      {showCategoryBar && <CategoryBar />}
-
-      {/* Routes */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<Cart />} />
-
+        <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-
         <Route path="/profile" element={<Profile />} />
-
-        <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/orders" element={<Orders />} />
-
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-success" element={<OrderSuccess />} />
         <Route path="/offers" element={<Offers />} />
-
       </Routes>
+
+      {/* Mobile Bottom Navigation */}
+      <BottomNav />
     </Router>
   );
 }

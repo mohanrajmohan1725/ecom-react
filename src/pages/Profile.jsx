@@ -1,15 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-
-import {
-  FaUserCircle,
-  FaUser,
-  FaBox,
-  FaHome,
-  FaCog,
-  FaSignOutAlt,
-} from "react-icons/fa";
+import { FaUserCircle, FaUser, FaBox, FaHome, FaCog, FaSignOutAlt } from "react-icons/fa";
 
 function Profile() {
   const navigate = useNavigate();
@@ -23,11 +14,7 @@ function Profile() {
     photo: "",
   });
 
-  const [orders, setOrders] = useState([]);
-
-  // -------------------------
-  // Load User + Orders
-  // -------------------------
+  // Load user
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("auth") === "true";
     if (!isLoggedIn) {
@@ -35,52 +22,37 @@ function Profile() {
       return;
     }
 
-    try {
-      const savedUser = JSON.parse(localStorage.getItem("user"));
-      if (savedUser) setUser(savedUser);
-
-      const savedOrders = JSON.parse(localStorage.getItem("orders_v1")) || [];
-      setOrders(savedOrders);
-    } catch (err) {
-      console.error("Profile parse error:", err);
-    }
+    const savedUser = JSON.parse(localStorage.getItem("user"));
+    if (savedUser) setUser(savedUser);
   }, [navigate]);
 
-  // -------------------------
-  // Update user fields
-  // -------------------------
+  // Update form field
   const handleChange = (field, value) => {
     setUser((prev) => ({ ...prev, [field]: value }));
   };
 
-  // -------------------------
-  // Upload Photo
-  // -------------------------
+  // Upload photo
   const handlePhotoUpload = (e) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      const updated = { ...user, photo: reader.result };
-      setUser(updated);
-      localStorage.setItem("user", JSON.stringify(updated));
-      toast.success("Profile photo updated!");
+      const updatedUser = { ...user, photo: reader.result };
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
     };
+
     reader.readAsDataURL(file);
   };
 
-  // -------------------------
-  // Save Profile
-  // -------------------------
+  // Save profile
   const handleUpdate = () => {
     localStorage.setItem("user", JSON.stringify(user));
-    toast.success("Profile updated!");
+    alert("Profile Updated Successfully!");
   };
 
-  // -------------------------
   // Logout
-  // -------------------------
   const handleLogout = () => {
     localStorage.removeItem("auth");
     navigate("/login");
@@ -88,25 +60,26 @@ function Profile() {
   };
 
   return (
-    <div className="pt-28 min-h-screen bg-gray-100 dark:bg-gray-900 dark:text-gray-100 px-4 pb-10">
-      <div className="max-w-6xl mx-auto flex gap-6">
+    <div className="min-h-screen overflow-y-auto bg-gray-100 dark:bg-gray-900 dark:text-gray-100 px-4 pb-24 pt-16 md:pt-28">
 
-        {/* =============================
-             LEFT SIDEBAR
-        ============================== */}
-        <aside className="w-64 bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-6">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-6">
 
+        {/* ---------- LEFT SIDEBAR ---------- */}
+        <aside className="w-full md:w-64 bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-4">
+
+          {/* Photo */}
           <div className="text-center">
             {user.photo ? (
               <img
                 src={user.photo}
                 alt="Profile"
-                className="w-28 h-28 rounded-full object-cover mx-auto border-4 border-blue-500 shadow-md"
+                className="w-28 h-28 rounded-full object-cover mx-auto border-4 border-blue-500"
               />
             ) : (
               <FaUserCircle className="text-6xl mx-auto text-gray-400 dark:text-gray-300" />
             )}
 
+            {/* Upload button */}
             <label className="mt-3 inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded cursor-pointer text-sm">
               Change Photo
               <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
@@ -116,28 +89,40 @@ function Profile() {
             <p className="text-gray-500 dark:text-gray-400 text-sm">{user.email}</p>
           </div>
 
-          {/* SIDEBAR MENU */}
+          {/* Menu */}
           <div className="space-y-2 pt-4 border-t dark:border-gray-700">
 
-            {[
-              { id: "overview", icon: <FaUser size={18} />, label: "Overview" },
-              { id: "address", icon: <FaHome size={18} />, label: "Address" },
-              { id: "orders", icon: <FaBox size={18} />, label: "Orders" },
-              { id: "settings", icon: <FaCog size={18} />, label: "Settings" },
-            ].map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`flex items-center gap-3 w-full px-3 py-2 rounded text-left transition
-                  ${
-                    activeTab === item.id
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-gray-200 dark:hover:bg-gray-700"
-                  }`}
-              >
-                {item.icon} {item.label}
-              </button>
-            ))}
+            <button
+              onClick={() => setActiveTab("overview")}
+              className={`flex items-center gap-3 w-full px-3 py-2 rounded text-left 
+                ${activeTab === "overview" ? "bg-blue-600 text-white" : "hover:bg-gray-200 dark:hover:bg-gray-700"}`}
+            >
+              <FaUser size={18} /> Overview
+            </button>
+
+            <button
+              onClick={() => setActiveTab("address")}
+              className={`flex items-center gap-3 w-full px-3 py-2 rounded text-left 
+                ${activeTab === "address" ? "bg-blue-600 text-white" : "hover:bg-gray-200 dark:hover:bg-gray-700"}`}
+            >
+              <FaHome size={18} /> Address
+            </button>
+
+            <button
+              onClick={() => setActiveTab("orders")}
+              className={`flex items-center gap-3 w-full px-3 py-2 rounded text-left 
+                ${activeTab === "orders" ? "bg-blue-600 text-white" : "hover:bg-gray-200 dark:hover:bg-gray-700"}`}
+            >
+              <FaBox size={18} /> Orders
+            </button>
+
+            <button
+              onClick={() => setActiveTab("settings")}
+              className={`flex items-center gap-3 w-full px-3 py-2 rounded text-left 
+                ${activeTab === "settings" ? "bg-blue-600 text-white" : "hover:bg-gray-200 dark:hover:bg-gray-700"}`}
+            >
+              <FaCog size={18} /> Settings
+            </button>
 
             <button
               onClick={handleLogout}
@@ -149,17 +134,16 @@ function Profile() {
 
         </aside>
 
-        {/* =============================
-             RIGHT CONTENT AREA
-        ============================== */}
+        {/* ---------- RIGHT CONTENT ---------- */}
         <main className="flex-1 bg-white dark:bg-gray-800 shadow rounded-lg p-6">
 
-          {/* ----------------- OVERVIEW ----------------- */}
+          {/* OVERVIEW */}
           {activeTab === "overview" && (
             <div>
               <h2 className="text-2xl font-bold mb-4">Personal Information</h2>
 
               <div className="space-y-4">
+
                 <div>
                   <label className="block text-sm mb-1">Full Name</label>
                   <input
@@ -179,6 +163,7 @@ function Profile() {
                     className="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600"
                   />
                 </div>
+
               </div>
 
               <button
@@ -190,7 +175,7 @@ function Profile() {
             </div>
           )}
 
-          {/* ----------------- ADDRESS TAB ----------------- */}
+          {/* ADDRESS */}
           {activeTab === "address" && (
             <div>
               <h2 className="text-2xl font-bold mb-4">Address Details</h2>
@@ -199,7 +184,7 @@ function Profile() {
                 value={user.address}
                 onChange={(e) => handleChange("address", e.target.value)}
                 className="w-full border p-3 h-32 rounded dark:bg-gray-700 dark:border-gray-600"
-              />
+              ></textarea>
 
               <button
                 onClick={handleUpdate}
@@ -210,44 +195,15 @@ function Profile() {
             </div>
           )}
 
-          {/* ----------------- ORDERS TAB ----------------- */}
+          {/* ORDERS */}
           {activeTab === "orders" && (
             <div>
               <h2 className="text-2xl font-bold mb-4">Your Orders</h2>
-
-              {orders.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400">
-                  You have no orders yet.
-                </p>
-              ) : (
-                <div className="space-y-4">
-                  {orders.map((order) => (
-                    <div
-                      key={order.orderId}
-                      className="p-4 border rounded dark:border-gray-700 dark:bg-gray-700"
-                    >
-                      <h3 className="font-bold text-lg">
-                        Order #{order.orderId}
-                      </h3>
-                      <p className="text-sm text-gray-400">
-                        {order.date}
-                      </p>
-
-                      <p className="mt-2 font-semibold">
-                        Total: ₹{order.total}
-                      </p>
-
-                      <p className="text-sm text-gray-400">
-                        Payment: {order.paymentMethod}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <p className="text-gray-500 dark:text-gray-400">You have no orders yet.</p>
             </div>
           )}
 
-          {/* ----------------- SETTINGS TAB ----------------- */}
+          {/* SETTINGS */}
           {activeTab === "settings" && (
             <div>
               <h2 className="text-2xl font-bold mb-4">Account Settings</h2>
